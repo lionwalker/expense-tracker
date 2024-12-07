@@ -100,3 +100,13 @@
   - **Task log:**
 
     ![Log of tasks](output/task-log.png "Log of tasks")
+
+## Project Deployment
+
+This project is deployed on the Control Room, linked with a GitHub repository.
+
+By using Control Room, the automation process is scheduled and managed efficiently, ensuring the task runs as expected.
+
+- **Process Logs:**
+
+  ![Log of control room process](output/control-room-log.png "Log of control room process")

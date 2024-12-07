@@ -23,3 +23,4 @@ artefacts/*
 !output/expenses-history-report.pdf
 !output/task-log.png
 !output/pdf-preview.png
+!output/control-room-log.png
