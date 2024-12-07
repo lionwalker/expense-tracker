@@ -13,3 +13,7 @@ dependencies:
     - rpaframework==28.5.1        # https://rpaframework.org/releasenotes.html
     - robocorp==2.0.1             # https://pypi.org/project/robocorp
     - robocorp-browser==2.3.3     # https://pypi.org/project/robocorp-browser
+    - pdfkit==1.0.0               # https://pypi.org/project/pdfkit/  
+    
+apt_packages:
+  - wkhtmltopdf

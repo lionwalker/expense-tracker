@@ -3,22 +3,18 @@ from robocorp.tasks import task
 from datetime import datetime
 
 from RPA.HTTP import HTTP
-from RPA.PDF import PDF
+from artefacts.PDF import PDF
 
 ARTEFACTS = "artefacts"
 REMOTE_EXPENSES_FILE = "https://fspacheco.github.io/rpa-challenge/assets/list-expenses.txt"
 LOCAL_EXPENSES_FILE = f"{ARTEFACTS}\latest-expenses.txt"
 TRACKER_APP = "https://fspacheco.github.io/rpa-challenge/expense-tracker.html"
-OUTPUT_REPORT = "expenses-report.pdf"
 DEBUG_MODE=True
 
 @task
 def robot_expense_tracker():
     """
-    Main task which solves the RPA challenge!
-
-    Downloads the source data Excel file and uses Playwright to fill the entries inside
-    rpachallenge.com.
+    Transfers the list of daily expense entries from a note-taking app to a website, then to a PDF file.
     """
     
     browser.configure(
@@ -37,11 +33,11 @@ def robot_expense_tracker():
         open_the_expense_tacking_website(TRACKER_APP)
         fill_form_with_list(data)
         
-        print(data)
+        # Make a PDF with custom made class
+        export_as_pdf(data)
     except Exception as e:
-        return f"Error: An unexpected error occurred. {e}"
+        return f"Error: An unexpected error occurred."
     finally:
-        # A place for teardown and cleanups. (Playwright handles browser closing)
         print("Automation finished!")
 
 def download_file(url, save_to):
@@ -84,8 +80,11 @@ def read_text_file(file_path):
             if (len(columns) != 4):
                 raise Exception("Invalid data in the text file")
             
-            # Format date
-            columns[0] = f"{columns[0]}/{datetime.now().year}"
+            # Convert date format
+            columns[0] = convert_date_format(columns[0])
+            
+            # Convert amount to float values
+            columns[2] = convert_amount_format(columns[2])
             
             # Correct spelling mistakes in the category names
             is_changed = 0
@@ -100,6 +99,47 @@ def read_text_file(file_path):
             data.append(columns)
 
     return data
+
+def convert_date_format(date):
+    """
+    Converts a date in dd/mm format to mm/dd/yyyy with the current year. 
+    
+    Args:
+        date_str: Date string in dd/mm format. 
+        
+    Return: 
+        Date string in mm/dd/yyyy format with the current year.
+    """ 
+    
+    current_year = datetime.now().year 
+    # Convert the input date string to a datetime object 
+    date_obj = datetime.strptime(date, '%d/%m') 
+    # Format the date to mm/dd/yyyy 
+    formatted_date = date_obj.strftime(f'%m/%d/{current_year}') 
+    
+    return formatted_date
+
+def convert_amount_format(value):
+    """
+    Change a string with a comma as a decimal separator to a dot.
+    If the value is already a number, it converts it to a string.
+
+    Args:
+        value: Value to be converted.
+        
+    Return: 
+        Converted float value or the original value if it's already a string.
+    """
+    
+    if isinstance(value, str):
+        # Replace comma with dot
+        value = value.replace(',', '.')        
+        return value
+    elif isinstance(value, (int, float)):        
+        # Return the value if it's already a number
+        return str(value)
+    else:
+        raise Exception("The provided value is not a string or a number.")
 
 def open_the_expense_tacking_website(url):
     """
@@ -122,22 +162,34 @@ def fill_form_with_list(data):
     for row in data:
         page = browser.page()
 
+        type_date_manually(page, "#date", row[0])
         page.fill("#description", row[1])
         page.fill("#amount", row[2])
-        page.fill("#date", str(row[0]))
         page.select_option("#category", str(row[3]))
         page.click("text=Add Expense")
         
-def export_as_pdf():
+def type_date_manually(page, selector, date):
     """
-    Export data to a PDF file
+    Types the date string manually into the input field. 
     
     Args:
-        data: List of sanitized data
+        page: Playwright page object. 
+        selector: Selector for the date input field. 
+        date: Date string to be typed. 
+    """ 
+    
+    page.click(selector) 
+    for char in date:
+        page.keyboard.press(char)
+        
+def export_as_pdf(data):
     """
+    Creates a PDF with a table from a list of lists. 
     
-    page = browser.page()
-    expenses_history_html = page.locator("#expenses-list").inner_html()
+    Args: 
+        data: List of lists to be included in the PDF as a table. 
+        output_file: Path to the output PDF file. 
+    """ 
     
-    pdf = PDF()
-    pdf.html_to_pdf(expenses_history_html, "output/expenses-history-report.pdf")
+    pdf = PDF(data)
+    pdf.generate()

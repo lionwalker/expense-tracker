@@ -19,3 +19,7 @@ challenge.xlsx
 __pycache__
 
 artefacts
+!artefacts/PDF.py
+!output/expenses-history-report.pdf
+!output/task-log.png
+!output/pdf-preview.png
