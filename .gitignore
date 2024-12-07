@@ -1,4 +1,4 @@
-output/
+output/*
 venv/
 temp/
 .rpa/
@@ -18,7 +18,7 @@ testrun/*
 challenge.xlsx
 __pycache__
 
-artefacts
+artefacts/*
 !artefacts/PDF.py
 !output/expenses-history-report.pdf
 !output/task-log.png
