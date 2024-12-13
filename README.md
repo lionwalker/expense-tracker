@@ -3,6 +3,7 @@
 ## Members
 
   - Lahiru Madhusanka Hewawasam Halloluwage, lionwalker, amk1002573@student.hamk.fi
+  - Sasvi Vidunadi Ranasinghe, sasvi23, amk1005778@student.hamk.fi
 
 ## Summary
 
@@ -29,7 +30,9 @@
   │   └── PDF.py
   │
   ├── output/
-  │   ├── expenses-history-report.pdf  
+  │   ├── control-room-log.png
+  │   ├── expenses-history-report.pdf
+  │   ├── pdf-preview.png
   │   ├── task-log.png
   │
   ├── .gitignore  
